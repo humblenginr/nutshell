@@ -2,26 +2,26 @@
 
 # Compiler flags
 CFLAGS=" -Wno-implicit-function-declaration -O0 -g"
+BUILD_DIR=./build
 
 set -xe
 
+clear_build () {
+    rm -rf $BUILD_DIR
+}
 
 compile () {
-    flex nutsh.l &&
-    bison -d nutsh.y && 
-    clang $CFLAGS -o nutsh nutsh.tab.c lex.yy.c
+    cd $BUILD_DIR &&
+    flex ../nutsh.l &&
+    bison -d ../nutsh.y && 
+    clang $CFLAGS -o nutsh nutsh.tab.c lex.yy.c &&
+    cd ../
 }
 
-clear () {
-    rm -rf nutsh.tab.c nutsh.tab.h lex.yy.c nutsh
+run () {
+    $BUILD_DIR/nutsh     
 }
 
-if [ "$1" == "compile" ]; then
-    compile
-elif [ "$1" == "clear" ]; then
-    clear
-else
-    echo "Usage: $0 {compile|clear}"
-    exit 1
-fi
-
+mkdir -p $BUILD_DIR &&
+compile &&
+run
