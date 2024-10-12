@@ -3,22 +3,26 @@
 <img src="https://github.com/user-attachments/assets/d7a119fb-5a27-4282-b13b-a7ba6982695e" width=100/>
 
 
-**Nutshell** is a shell that, in a nutshell, is a nutshell. It’s a lightweight command-line interface that brings the core functionalities of a shell together in a compact form—like a nutshell!
+**Nutshell** is a shell that, in a nutshell, is a nutshell. It’s compact shell I am developing in C.
 
 ## Features
 
 - **Command Execution**: Run basic shell commands with ease!
 - **Argument Handling**: Pass arguments like a pro.
-- **Piping Power**: Chain commands together like a series of nuts in a shell.
-- **Background Processes**: Let your commands run while you kick back and relax.
+
+Future Support:
+1. Piping
+2. Background
+3. Builtin
+4. etc
 
 ## Build Instructions
 
-Ready to crack open your very own Nutshell? Make sure you have the following ingredients on hand:
+Make sure to have the following dependencies:
 
-- **Clang**: For compiling this nutty creation.
-- **Flex**: To generate the lexical analyzer (the nutcracker!).
-- **Bison**: Our trusty parser generator, making sense of it all.
+- **Clang**: For compiling.
+- **Flex**: To generate the lexical analyzer.
+- **Bison**: Parser generator
 
 ### Steps to Build
 
@@ -39,11 +43,6 @@ Ready to crack open your very own Nutshell? Make sure you have the following ing
    ./build.sh
    ```
 
-4. **Run Nutshell**: Once built, dive into your shell with:
-   ```
-   ./nutshell
-   ```
-
 ## Usage
 
 Welcome to Nutshell! Once you start it up, you’ll see a prompt waiting for your commands, like a squirrel eagerly awaiting its next nut. Here are some fun examples to try out:
@@ -55,7 +54,7 @@ Welcome to Nutshell! Once you start it up, you’ll see a prompt waiting for you
 
 - **Sleep in the Background**: Let commands snooze while you do other things:
    ```
-   > sleep 10 &
+   > sleep 10
    ```
 
 - **Piping Commands**: Combine commands like a clever squirrel stacking nuts:
