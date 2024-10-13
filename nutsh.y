@@ -7,7 +7,6 @@ void InitCommand();
 int yylex();
 int yyparse();
 Command* curCommand;
-CommandStack cmdStack;
 %}
 
 %union {
@@ -20,7 +19,7 @@ CommandStack cmdStack;
 %token <string_val> WORD
 
 
-%type <string_val> cmd_and_args pipe_list arg_list
+%type <string_val> cmd_and_args  arg_list
 
 %%
 
@@ -31,12 +30,7 @@ command_list:
 command_line: 
 	pipe_list NEWLINE {
 		// Execute command
-		Command cmd = {0};
-		int res = PopCommand(&cmdStack, &cmd);
-		if (res == -1){
-			printf("Cound not pop command!\n");
-		}
-		Execute(&cmd);
+		Execute(curCommand);
 		curCommand=NULL;
 		PrintPrompt();
 	}
@@ -44,12 +38,23 @@ command_line:
 	;
 
 pipe_list:
-	 pipe_list PIPE cmd_and_args 
+	pipe_list PIPE cmd_and_args {
+		SimpleCommand sCmd = {0};
+		char** argv = Split($3, ':');
+		sCmd.argv = argv;		
+		if(curCommand == NULL){
+			InitCommand();
+		}
+		AppendSimpleCommand(curCommand, sCmd);
+	}
 	 | cmd_and_args {
-		InitCommand();
+		SimpleCommand sCmd = {0};
 		char** argv = Split($1, ':');
-		curCommand->argv = argv;		
-		PushCommand(&cmdStack, *curCommand);
+		sCmd.argv = argv;		
+		if(curCommand == NULL){
+			InitCommand();
+		}
+		AppendSimpleCommand(curCommand, sCmd);
 	 }
 	 ;
 
@@ -89,16 +94,23 @@ int yywrap()
         return 1;
 } 
 
+
 // Allocates a Command on heap and sets the curCommand global variable to point to it
-void InitCommand() {
+void InitCommand(){
 	Command* cmd = malloc(sizeof(Command));
 	curCommand = cmd;
 }
+
+// Allocates a SimpleCommand on heap and returns it
+SimpleCommand* InitSimpleCommand(){
+	SimpleCommand* cmd = malloc(sizeof(SimpleCommand));
+	return cmd;
+}
+
   
 int main()
 {
 	Command* curCommand = NULL;
-	CommandStack cmdStack = {0};
 	PrintPrompt();
         return yyparse();
 }

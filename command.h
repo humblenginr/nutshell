@@ -2,26 +2,27 @@
 #define COMMAND_H
 
 #include "common.h"
+#include <errno.h>
+
 
 // COMMAND
 typedef struct {
 	char**	argv;
+} SimpleCommand;
+
+typedef struct {
+	SimpleCommand* items;
+	int capacity;
+	int count;
+
 } Command;
+
+void AppendSimpleCommand(Command* cmd, SimpleCommand sCmd);
 
 void Execute(Command* cmd);
 void FreeCommand(Command* cmd);
 
-//COMMAND STACK
-typedef struct {
-	Command* items;
-	int	count;
-	int	capacity;
-} CommandStack;
-
-void PushCommand(CommandStack* cmdArr, Command cmd);
-int PopCommand(CommandStack* cmdArr, Command* res);
-#endif // !COMMAND_H
-//
-
-
 char ** Split(char * a_str, const char a_delim);
+
+#endif // !COMMAND_H
+
