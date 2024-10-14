@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 void PrintPrompt(){
 	printf("> ");
@@ -17,80 +18,6 @@ void AppendSimpleCommand(Command *cmd, SimpleCommand sCmd){
 }
 
 
-
-
-/*void Execute(Command* cmd) {
-    // Save original stdin and stdout
-    int tmpin = dup(STDIN_FILENO);
-    int tmpout = dup(STDOUT_FILENO);
-
-    // Set up fdin to read from stdin initially
-    int fdin = dup(tmpin);
-    int fdout;
-    int ret;
-    int pipefd[2];  // Pipe file descriptors
-
-    for (int i = 0; i < cmd->count; i++) {
-        SimpleCommand sCmd = cmd->items[i];
-
-        // If not the last command, create a pipe
-        if (i < cmd->count - 1) {
-            if (pipe(pipefd) == -1) {
-                perror("pipe error");
-                exit(1);
-            }
-            fdout = pipefd[1];  // Writing to this pipe
-            fdin = pipefd[0];   // Next process will read from this pipe
-        } else {
-            // Last command writes to stdout
-            fdout = dup(tmpout);
-        }
-
-        // Fork and execute the command
-        ret = fork();
-        if (ret < 0) {
-            perror("fork failed");
-            exit(1);
-        } else if (ret == 0) {
-            // In the child process
-
-            // Redirect stdin to fdin
-            dup2(fdin, STDIN_FILENO);
-            close(fdin);  // Close the original fdin after duplicating
-
-            // Redirect stdout to fdout
-            if (i < cmd->count - 1) {
-                dup2(fdout, STDOUT_FILENO);
-            }
-            close(fdout);  // Close the original fdout after duplicating
-
-            // Execute the command
-            execvp(sCmd.argv[0], sCmd.argv);
-            perror("execvp failed");  // If execvp fails
-            exit(1);
-        }
-
-        // In the parent process
-        close(fdout);  // Close parent's write end of the pipe
-        if (i > 0) {
-            close(fdin);  // Close parent's read end of the previous pipe
-        }
-    }
-
-    // Restore original stdin and stdout
-    dup2(tmpin, STDIN_FILENO);
-    dup2(tmpout, STDOUT_FILENO);
-    close(tmpin);
-    close(tmpout);
-
-    // Wait for all processes to complete
-    for (int i = 0; i < cmd->count; i++) {
-        wait(NULL);
-    }
-}*/
-
-
-
 void Execute(Command* cmd){
 	// save in/out channels
 	int tmpin = dup(STDIN_FILENO);		
@@ -98,7 +25,11 @@ void Execute(Command* cmd){
 
 	// set fdin and fdout as 0 and 1 to begin with
 	int fdin, fdout;
-	fdin = dup(tmpin);
+	if(cmd->inputFile){
+		fdin = open(cmd->inputFile, O_RDONLY);		
+	}else {
+		fdin = dup(tmpin);
+	}
 	fdout = dup(tmpout);
 
 	int ret;
@@ -113,7 +44,11 @@ void Execute(Command* cmd){
 
 		// if last command, then set fdout to be 
 		if(i == cmd->count - 1){
-			fdout = dup(tmpout);
+			if(cmd->outputFile){
+				fdout = open(cmd->outputFile, O_WRONLY);
+			} else {
+				fdout = dup(tmpout);
+			}
 		} else {
 			// not the last command
 			// create a pipe and set fdout and fdin 

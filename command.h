@@ -15,6 +15,9 @@ typedef struct {
 	int capacity;
 	int count;
 
+	char* inputFile;
+	char* outputFile;
+
 } Command;
 
 void AppendSimpleCommand(Command* cmd, SimpleCommand sCmd);

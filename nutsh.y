@@ -19,7 +19,7 @@ Command* curCommand;
 %token <string_val> WORD
 
 
-%type <string_val> cmd_and_args  arg_list
+%type <string_val> cmd_and_args arg_list
 
 %%
 
@@ -28,7 +28,7 @@ command_list:
 	;
 
 command_line: 
-	pipe_list NEWLINE {
+	pipe_list io_modifier_list NEWLINE {
 		// Execute command
 		Execute(curCommand);
 		curCommand=NULL;
@@ -36,6 +36,26 @@ command_line:
 	}
 	| NEWLINE 
 	;
+
+io_modifier_list:
+	| io_modifier_list io_modifier
+	;
+
+io_modifier: 
+	GREAT WORD {
+		if(curCommand == NULL){
+			InitCommand();
+		}
+		curCommand->outputFile = $2;
+	}
+	| LESS WORD {
+		if(curCommand == NULL){
+			InitCommand();
+		}
+		curCommand->inputFile = $2;	
+	}
+	;
+
 
 pipe_list:
 	pipe_list PIPE cmd_and_args {
@@ -98,6 +118,9 @@ int yywrap()
 // Allocates a Command on heap and sets the curCommand global variable to point to it
 void InitCommand(){
 	Command* cmd = malloc(sizeof(Command));
+	// TODO: I am not sure whether malloc fills the bytes with NULL, so i am doing it myself
+	cmd->inputFile = NULL;
+	cmd->outputFile = NULL;
 	curCommand = cmd;
 }
 
