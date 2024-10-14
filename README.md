@@ -3,18 +3,12 @@
 <img src="https://github.com/user-attachments/assets/d7a119fb-5a27-4282-b13b-a7ba6982695e" width=100/>
 
 
-**Nutshell** is a shell that, in a nutshell, is a nutshell. It’s compact shell I am developing in C.
+**Nutshell** is a boring ordinary shell I am developing in C for learning.
 
 ## Features
 
 - **Command Execution**: Run basic shell commands with ease!
 - **Argument Handling**: Pass arguments like a pro.
-
-Future Support:
-1. Piping
-2. Background
-3. Builtin
-4. etc
 
 ## Build Instructions
 
